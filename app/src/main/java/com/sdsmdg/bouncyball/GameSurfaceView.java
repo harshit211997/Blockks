@@ -10,14 +10,18 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
 
     SurfaceHolder surfaceHolder;
     GameThread gameThread = null;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    Ball ball;
     int h;
+    List<Block> blocks;
 
     public GameSurfaceView(Context context) {
         super(context);
@@ -31,12 +35,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
-        ball = new Ball(50, 50);
+        blocks = new ArrayList<Block>();
         gameThread = new GameThread(this);
         gameThread.setRunning(true);
         gameThread.start();
         Log.i("harshit", "gamethread running");
-
 
     }
 
@@ -76,22 +79,27 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         h = canvas.getHeight();
 
         paint.setColor(Color.WHITE);
-        canvas.drawCircle((int)ball.getX(), (int)ball.getY(), ball.radius, paint);
+
+        Iterator<Block> iterator = blocks.iterator();
+        while (iterator.hasNext()) {
+            Block block = iterator.next();
+            canvas.drawRect(block.getX() - (block.side / 2),
+                    block.getY() - (block.side / 2),
+                    block.getX() + (block.side / 2),
+                    block.getY() + (block.side / 2),
+                    paint);
+        }
 
     }
 
-    public void update(double time) {
+    public void update(int time) {
 
-        if (!ball.isTouched()) {
-            if (ball.getY() <= h) {
-                ball.setVy(ball.getVy() + ball.getAy() * time * 0.01);
-                ball.setY((int) (ball.getY() + ball.getVy() * time * 0.01));
-            } else {
-                ball.setVy(-0.3 * ball.getVy());
-                ball.setY((int) (h + ball.getVy() * time * 0.01));
-            }
-            Log.i("harshit", "y="+ball.getY() + ", vy=" + ball.getVy());
+        Iterator<Block> iterator = blocks.iterator();
+        while (iterator.hasNext()) {
+            Block block = iterator.next();
+            block.update(time, h);
         }
+
     }
 
     public void render() {
@@ -112,7 +120,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
@@ -122,19 +129,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         switch (action) {
 
-            case MotionEvent.ACTION_DOWN:
-                ball.checkTouch(x, y);
+            case MotionEvent.ACTION_UP:
+
+                blocks.add(new Block(x, y));
                 break;
 
-            case MotionEvent.ACTION_MOVE:
-                if (ball.isTouched()) {
-                    ball.setX(x);
-                    ball.setY(y);
-                    ball.setVy(0);
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                ball.setTouched(false);
         }
 
         return true;
