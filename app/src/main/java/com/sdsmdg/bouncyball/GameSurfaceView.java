@@ -4,14 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -39,7 +37,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         gameThread = new GameThread(this);
         gameThread.setRunning(true);
         gameThread.start();
-        Log.i("harshit", "gamethread running");
 
     }
 
@@ -80,24 +77,26 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         paint.setColor(Color.WHITE);
 
-        Iterator<Block> iterator = blocks.iterator();
-        while (iterator.hasNext()) {
-            Block block = iterator.next();
+        for(int i = 0; i<blocks.size(); i++) {
+
+            Block block = blocks.get(i);
+
             canvas.drawRect(block.getX() - (block.side / 2),
                     block.getY() - (block.side / 2),
                     block.getX() + (block.side / 2),
                     block.getY() + (block.side / 2),
                     paint);
+
         }
 
     }
 
     public void update(int time) {
 
-        Iterator<Block> iterator = blocks.iterator();
-        while (iterator.hasNext()) {
-            Block block = iterator.next();
-            block.update(time, h);
+        for(int i=0; i<blocks.size(); i++) {
+
+            blocks.get(i).update(time);
+
         }
 
     }
@@ -131,7 +130,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
             case MotionEvent.ACTION_UP:
 
-                blocks.add(new Block(x, y));
+                blocks.add(new Block(x, y, h));
                 break;
 
         }
