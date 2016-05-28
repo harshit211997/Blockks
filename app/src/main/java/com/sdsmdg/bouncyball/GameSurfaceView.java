@@ -97,12 +97,17 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
             blocks.get(i).update(time);
 
+            for(int j=0; j<i; j++) {
+
+                blocks.get(i).checkCollission(blocks.get(j));
+
+            }
+
         }
 
     }
 
     public void render() {
-        //The function run in background thread, not ui thread.
 
         Canvas canvas = null;
 

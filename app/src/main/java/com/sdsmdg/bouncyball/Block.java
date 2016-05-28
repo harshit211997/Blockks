@@ -70,12 +70,22 @@ public class Block {
 
     }
 
-    public boolean checkCollission(Block block) {
-        if(y - block.y <= side) {
-            h = h - side;
-            return true;
+    public void checkCollission(Block block) {
+        float diffX;
+        float diffY;
+        if(block.x - x >= 0)
+            diffX = block.x - x;
+        else
+            diffX = x - block.x;
+
+        if(block.y - y >= 0)
+            diffY = block.y - y;
+        else
+            diffY = y - block.y;
+
+        if(diffY <= side && diffX <= side) {
+            h -= side + 5;
         }
-        return false;
     }
 
 }
