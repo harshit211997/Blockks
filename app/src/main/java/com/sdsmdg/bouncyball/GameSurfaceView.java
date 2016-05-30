@@ -18,8 +18,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     SurfaceHolder surfaceHolder;
     GameThread gameThread = null;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    int h;
+    int h, w;
     List<Block> blocks;
+    int prevX = 0, prevY = 0;
 
     public GameSurfaceView(Context context) {
         super(context);
@@ -33,7 +34,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
-        blocks = new ArrayList<Block>();
+        blocks = new ArrayList<>();
         gameThread = new GameThread(this);
         gameThread.setRunning(true);
         gameThread.start();
@@ -74,19 +75,17 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paint.setStyle(Paint.Style.FILL);
 
         h = canvas.getHeight();
+        w = canvas.getWidth();
 
         paint.setColor(Color.WHITE);
 
         for(int i = 0; i<blocks.size(); i++) {
-
             Block block = blocks.get(i);
-
             canvas.drawRect(block.getX() - (block.side / 2),
                     block.getY() - (block.side / 2),
                     block.getX() + (block.side / 2),
                     block.getY() + (block.side / 2),
                     paint);
-
         }
 
     }
@@ -94,13 +93,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void update(int time) {
 
         for(int i=0; i<blocks.size(); i++) {
-
             blocks.get(i).update(time);
-
             for(int j=0; j<i; j++) {
-
-                blocks.get(i).checkCollission(blocks.get(j));
-
+                blocks.get(j).checkCollission(blocks.get(i));
             }
 
         }
@@ -133,9 +128,21 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         switch (action) {
 
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_DOWN:
+                prevX = x;
+                prevY = y;
+                blocks.add(new Block((float)0.75*h, (float)0.75*w, h));
 
-                blocks.add(new Block(x, y, h));
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                blocks.get(blocks.size()-1).setX(x);
+                blocks.get(blocks.size()-1).setY(y);
+                break;
+
+            case MotionEvent.ACTION_UP:
+                blocks.get(blocks.size()-1).setVx(prevX - x);
+                blocks.get(blocks.size()-1).setVy(prevY - y);
                 break;
 
         }
