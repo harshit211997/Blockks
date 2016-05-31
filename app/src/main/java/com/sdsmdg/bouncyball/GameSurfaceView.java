@@ -131,7 +131,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             case MotionEvent.ACTION_DOWN:
                 prevX = x;
                 prevY = y;
-                blocks.add(new Block((float)0.75*h, (float)0.75*w, h));
+                Block block = new Block((float)0.75*h, (float)0.75*w, h);
+                blocks.add(block);
+                if(blocks.size() == 1){
+                    block.firstBlock = true;
+                }
 
                 break;
 
