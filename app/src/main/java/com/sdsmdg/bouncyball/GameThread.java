@@ -5,9 +5,18 @@ public class GameThread extends Thread{
     boolean running = false;
     GameSurfaceView parent;
     int MS_GAME_TIME = 16;
+    static GameThread gameThread;
+    boolean isPause = false;
 
     GameThread(GameSurfaceView gameSurfaceView) {
         parent = gameSurfaceView;
+    }
+
+    public static GameThread getInstance(GameSurfaceView gameSurfaceView) {
+        if(gameThread == null) {
+            gameThread = new GameThread(gameSurfaceView);
+        }
+        return gameThread;
     }
 
     void setRunning(boolean r) {
@@ -23,20 +32,22 @@ public class GameThread extends Thread{
         long previous = System.currentTimeMillis();
 
         while(running) {
-            current = System.currentTimeMillis();
-            elapsed = current - previous;
-            lag += elapsed;
+            if(!isPause) {
+                current = System.currentTimeMillis();
+                elapsed = current - previous;
+                lag += elapsed;
 
-            while(lag>=MS_GAME_TIME) {
-                lag -= MS_GAME_TIME;
+                while (lag >= MS_GAME_TIME) {
+                    lag -= MS_GAME_TIME;
 
-                parent.update(MS_GAME_TIME);
+                    parent.update(MS_GAME_TIME);
 
+                }
+
+                previous = System.currentTimeMillis();
+
+                parent.render();
             }
-
-            previous = System.currentTimeMillis();
-
-            parent.render();
         }
     }
 }

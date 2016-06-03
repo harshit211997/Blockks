@@ -1,6 +1,7 @@
 package com.sdsmdg.bouncyball;
 
-import android.util.Log;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Block {
 
@@ -8,15 +9,18 @@ public class Block {
     private float vx = 0, vy = 0;
     private float ax, ay = 9.8f;
     int side = 20;
-    int h;
+    int increasedSize = 100;
+    static int h;
     String TAG = "harshit";
     boolean grow = false;
     boolean shrink = false;
     boolean firstBlock = false;
-    public Block(float x, float y, int h) {
+    boolean lastBlock = false;
+    static List<Block> stack = new ArrayList<>();
+
+    public Block(float x, float y) {
         this.x = x;
         this.y = y;
-        this.h = h;
     }
 
     public void setX(float x) {
@@ -60,7 +64,7 @@ public class Block {
     }
 
     public void setH(int h) {
-        this.h = h;
+        Block.h = h;
     }
 
     public void update(int time) {
@@ -73,89 +77,94 @@ public class Block {
             vy = -3 * vy / 10;
             vx = 0;
             y = h - side / 2 + vy * time * 0.01f;
-            if(firstBlock)
+            if (firstBlock) {
                 grow = true;
-            else
+                stack.add(this);
+            }
+            else {
                 shrink = true;
+            }
         }
         grow();
         shrink();
+
     }
 
     public void checkCollission(Block block) {
 
-        if (x - block.x >= 0 && x - block.x < (side + block.side)/2 && y - block.y >= 0 && y - block.y < (side + block.side)/2) {
+        if (x - block.x >= 0 && x - block.x < (side + block.side) / 2 && y - block.y >= 0 && y - block.y < (side + block.side) / 2) {//top left
             if (x - block.x > y - block.y) {
-                block.x = x - (side + block.side)/2;
+                block.x = x - (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 block.shrink = true;
             } else {
-                block.y = y - (side + block.side)/2;
-                block.vy = vy - 0.3f * block.vy;
+                block.y = y - (side + block.side) / 2;
+                block.vy = - 0.0f * block.vy;
                 block.vx = 0;
-                block.grow = true;
+                if(lastBlock) {
+                    block.grow = true;
+                    stack.add(block);
+                }
+                else if(!block.grow)//This is to prevent the ball on top to shrink again
+                    block.shrink = true;
             }
-            Log.i(TAG, "top left");
-        }
-
-        else if (x - block.x >= 0 && x - block.x < (side + block.side)/2 && block.y - y >= 0 && block.y - y < (side + block.side)/2) {
+        } else if (x - block.x >= 0 && x - block.x < (side + block.side) / 2 && block.y - y >= 0 && block.y - y < (side + block.side) / 2) {//bottom left
             if (x - block.x > block.y - y) {
-                block.x = x - (side + block.side)/2;
+                block.x = x - (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 block.shrink = true;
             } else {
-                block.y = y + (side + block.side)/2;
-                block.vy = vy - 0.3f * block.vy;
+                block.y = y + (side + block.side) / 2;
+                block.vy = - 0.0f * block.vy;
                 block.shrink = true;
             }
-            Log.i(TAG, "bottom left");
-        }
-
-        else if (block.x - x >= 0 && block.x - x < (side + block.side)/2 && block.y - y >= 0 && block.y - y < (side + block.side)/2) {
+        } else if (block.x - x >= 0 && block.x - x < (side + block.side) / 2 && block.y - y >= 0 && block.y - y < (side + block.side) / 2) {//bottom right
             if (block.x - x > block.y - y) {
-                block.x = x + (side + block.side)/2;
+                block.x = x + (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 block.shrink = true;
             } else {
-                block.y = y + (side + block.side)/2;
-                block.vy = vy - 0.3f * block.vy;
+                block.y = y + (side + block.side) / 2;
+                block.vy = - 0.0f * block.vy;
                 block.shrink = true;
             }
-            Log.i(TAG, "bottom right");
-        }
-
-        else if (block.x - x >= 0 && block.x - x < (side + block.side)/2 && y - block.y >= 0 && y - block.y < (side + block.side)/2) {
+        } else if (block.x - x >= 0 && block.x - x < (side + block.side) / 2 && y - block.y >= 0 && y - block.y < (side + block.side) / 2) {//top right
             if (block.x - x > y - block.y) {
-                block.x = x + (side + block.side)/2;
+                block.x = x + (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 block.shrink = true;
             } else {
-                block.y = y - (side + block.side)/2;
-                block.vy = vy - 0.3f * block.vy;
+                block.y = y - (side + block.side) / 2;
+                block.vy = - 0.0f * block.vy;
                 block.vx = 0;
-                block.grow = true;
+                if(lastBlock) {
+                    block.grow = true;
+                    stack.add(block);
+                }
+                else if(!block.grow)
+                    block.shrink = true;
             }
-            Log.i(TAG, "top right");
         }
     }
 
-    public void grow(){
-        if(grow && shrink==false){
-            if(side < 100) {
-                side ++;
+    public void grow() {
+        if (grow && !shrink) {
+            if (side < increasedSize) {
+                side++;
             }
-            if(y == 100) {
+            if (y == increasedSize) {
                 grow = false;
             }
         }
     }
 
-    public void shrink(){
-        if(shrink){
-            if(side>0){
+    public void shrink() {
+        if (shrink) {
+            if (side > 0) {
                 side--;
             }
         }
     }
 
 }
+
