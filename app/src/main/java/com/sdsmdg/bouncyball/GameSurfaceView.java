@@ -75,6 +75,14 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         paint.setColor(Color.CYAN);
 
+        if(blocks.size() == 0) {
+            Block temp = new Block(w * 0.5f, h - 50);
+            temp.side = 100;
+            Block.h = h;
+            temp.firstBlock = true;
+            blocks.add(temp);
+        }
+
         for (int i = 0; i < blocks.size(); i++) {
             Block block = blocks.get(i);
             canvas.drawRect(block.getX() - (block.side / 2),
