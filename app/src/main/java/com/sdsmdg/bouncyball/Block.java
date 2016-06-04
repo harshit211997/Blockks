@@ -104,6 +104,8 @@ public class Block {
                 if(lastBlock) {
                     block.grow = true;
                     stack.add(block);
+                    block.lastBlock = true;
+                    lastBlock = false;
                 }
                 else if(!block.grow)//This is to prevent the ball on top to shrink again
                     block.shrink = true;
@@ -140,6 +142,8 @@ public class Block {
                 if(lastBlock) {
                     block.grow = true;
                     stack.add(block);
+                    block.lastBlock = true;
+                    lastBlock = false;
                 }
                 else if(!block.grow)
                     block.shrink = true;

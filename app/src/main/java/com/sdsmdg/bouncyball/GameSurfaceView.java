@@ -81,6 +81,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             Block.h = h;
             temp.firstBlock = true;
             blocks.add(temp);
+            temp.lastBlock = true;
         }
 
         for (int i = 0; i < blocks.size(); i++) {
@@ -106,16 +107,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         for (int i = 0; i < blocks.size(); i++) {
             if (blocks.get(i).side == 0) {
                 blocks.remove(i);
-            }
-        }
-
-        if(blocks.size() != 0){
-            blocks.get(0).firstBlock = true;
-            if(blocks.size() >= 2) {//last blocks (apart from the block ready to be thrown)
-                blocks.get(blocks.size() - 2).lastBlock = true;
-            }
-            if(blocks.size() >= 3) {//the block are no longer lastBlock
-                blocks.get(blocks.size() - 3).lastBlock = false;
             }
         }
 
