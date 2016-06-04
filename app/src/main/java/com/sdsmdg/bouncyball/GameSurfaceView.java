@@ -111,12 +111,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
-        if(Block.stack.size() >= 1 && Block.stack.get(Block.stack.size() - 1).getY() + cameraHeight < 100) {
-            increaseCameraHeight = true;
-        }
-
-        increaseCameraHeight();
-
     }
 
     public void render() {
@@ -181,14 +175,5 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
 
         return true;
-    }
-
-    public void increaseCameraHeight() {
-        if(increaseCameraHeight) {
-            cameraHeight ++;
-            if(cameraHeight % 100 == 0) {
-                increaseCameraHeight = false;
-            }
-        }
     }
 }
