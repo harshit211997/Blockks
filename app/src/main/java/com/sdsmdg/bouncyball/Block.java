@@ -99,7 +99,7 @@ public class Block {
                 block.shrink = true;
             } else {
                 block.y = y - (side + block.side) / 2;
-                block.vy = - 0.0f * block.vy;
+                block.vy = - 0.3f * block.vy;
                 block.vx = 0;
                 if(lastBlock) {
                     block.grow = true;
@@ -117,7 +117,7 @@ public class Block {
                 block.shrink = true;
             } else {
                 block.y = y + (side + block.side) / 2;
-                block.vy = - 0.0f * block.vy;
+                block.vy = - 0.3f * block.vy;
                 block.shrink = true;
             }
         } else if (block.x - x >= 0 && block.x - x < (side + block.side) / 2 && block.y - y >= 0 && block.y - y < (side + block.side) / 2) {//bottom right
@@ -127,7 +127,7 @@ public class Block {
                 block.shrink = true;
             } else {
                 block.y = y + (side + block.side) / 2;
-                block.vy = - 0.0f * block.vy;
+                block.vy = - 0.3f * block.vy;
                 block.shrink = true;
             }
         } else if (block.x - x >= 0 && block.x - x < (side + block.side) / 2 && y - block.y >= 0 && y - block.y < (side + block.side) / 2) {//top right
@@ -137,7 +137,7 @@ public class Block {
                 block.shrink = true;
             } else {
                 block.y = y - (side + block.side) / 2;
-                block.vy = - 0.0f * block.vy;
+                block.vy = - 0.3f * block.vy;
                 block.vx = 0;
                 if(lastBlock) {
                     block.grow = true;
