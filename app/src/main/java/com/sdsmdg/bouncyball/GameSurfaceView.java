@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -80,8 +81,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             temp.side = 100;
             Block.h = h;
             temp.firstBlock = true;
-            blocks.add(temp);
             temp.lastBlock = true;
+            blocks.add(temp);
+
         }
 
         for (int i = 0; i < blocks.size(); i++) {
@@ -110,8 +112,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
-        if((Block.stack.size() >= 1) && (Block.stack.get(Block.stack.size() - 1).getY() < 150)) {
+        if((Block.stack.size() >= 1) && (Block.stack.get(Block.stack.size() - 1).getY() + cameraHeight < 150)) {
             increaseCameraHeight = true;
+            Log.i("harshit", "increaseCameraHeight = true");
         }
 
         increaseCameraHeight();
@@ -152,9 +155,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 case MotionEvent.ACTION_DOWN:
                     prevX = x;
                     prevY = y;
-                    if(blocks.size() == 0) {
-                        Block.h = h;
-                    }
                     block = new Block((float) 0.75 * h, (float) 0.75 * w);
                     blocks.add(block);
                     ACTION_DOWN_PRESSED = true;
@@ -184,12 +184,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void increaseCameraHeight() {
         if(increaseCameraHeight) {
-
             cameraHeight ++;
-
-        }
-        if(cameraHeight % 100 == 0) {
-            increaseCameraHeight = false;
+            if(cameraHeight % 100 == 0) {
+                increaseCameraHeight = false;
+            }
         }
     }
 
