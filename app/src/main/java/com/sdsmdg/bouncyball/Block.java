@@ -91,16 +91,16 @@ public class Block {
     public void checkCollission(Block block) {
 
         if (x - block.x >= 0 && x - block.x < (side + block.side) / 2 && y - block.y >= 0 && y - block.y < (side + block.side) / 2) {//top left
-            if (x - block.x > y - block.y) {
+            if (x - block.x >= y - block.y) {
                 block.x = x - (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if(!stack.contains(block))
                     block.shrink = true;
             } else {
                 block.y = y - (side + block.side) / 2;
-                block.vy = - 0.3f * block.vy;
+                block.vy = vy - 0.3f * block.vy;
                 block.vx = 0;
-                if(lastBlock) {
+                if(lastBlock && !block.shrink) {//so that the block which was shrinking can't be added to stack
                     block.lastBlock = true;
                     lastBlock = false;
                     block.grow = true;
@@ -111,40 +111,40 @@ public class Block {
                     block.shrink = true;
             }
         } else if (x - block.x >= 0 && x - block.x < (side + block.side) / 2 && block.y - y >= 0 && block.y - y < (side + block.side) / 2) {//bottom left
-            if (x - block.x > block.y - y) {
+            if (x - block.x >= block.y - y) {
                 block.x = x - (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if(!stack.contains(block))
                     block.shrink = true;
             } else {
                 block.y = y + (side + block.side) / 2;
-                block.vy = - 0.3f * block.vy;
+                block.vy = vy - 0.3f * block.vy;
                 if(!stack.contains(block))
                     block.shrink = true;
             }
         } else if (block.x - x >= 0 && block.x - x < (side + block.side) / 2 && block.y - y >= 0 && block.y - y < (side + block.side) / 2) {//bottom right
-            if (block.x - x > block.y - y) {
+            if (block.x - x >= block.y - y) {
                 block.x = x + (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if(!stack.contains(block))
                     block.shrink = true;
             } else {
                 block.y = y + (side + block.side) / 2;
-                block.vy = - 0.3f * block.vy;
+                block.vy = vy - 0.3f * block.vy;
                 if(!stack.contains(block))
                     block.shrink = true;
             }
         } else if (block.x - x >= 0 && block.x - x < (side + block.side) / 2 && y - block.y >= 0 && y - block.y < (side + block.side) / 2) {//top right
-            if (block.x - x > y - block.y) {
+            if (block.x - x >= y - block.y) {
                 block.x = x + (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if(!stack.contains(block))
                     block.shrink = true;
             } else {
                 block.y = y - (side + block.side) / 2;
-                block.vy = - 0.3f * block.vy;
+                block.vy = vy - 0.3f * block.vy;
                 block.vx = 0;
-                if(lastBlock) {
+                if(lastBlock && !block.shrink) {//so that the block which was shrinking can't be added to stack
                     block.lastBlock = true;
                     lastBlock = false;
                     block.grow = true;

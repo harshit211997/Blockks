@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -114,7 +113,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         if((Block.stack.size() >= 1) && (Block.stack.get(Block.stack.size() - 1).getY() + cameraHeight < 150)) {
             increaseCameraHeight = true;
-            Log.i("harshit", "increaseCameraHeight = true");
         }
 
         increaseCameraHeight();
