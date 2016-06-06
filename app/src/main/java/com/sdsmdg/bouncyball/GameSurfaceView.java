@@ -92,6 +92,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     block.getX() + (block.side / 2),
                     block.getY() + cameraHeight + (block.side / 2),
                     paint);
+
+            canvas.drawText("Score " + (Block.stack.size() - 1), w - 100, 30, paint);
         }
 
     }
