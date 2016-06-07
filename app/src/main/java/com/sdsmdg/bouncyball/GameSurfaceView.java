@@ -18,6 +18,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     SurfaceHolder surfaceHolder;
     GameThread gameThread = null;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintScore = new Paint(Paint.ANTI_ALIAS_FLAG);
     int h, w;
     List<Block> blocks;
     int prevX = 0, prevY = 0;
@@ -54,13 +56,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-        if(gameThread != null)
+        if (gameThread != null)
             gameThread.isPause = false;
 
     }
 
     void onPause() {
-        if(gameThread != null)
+        if (gameThread != null)
             gameThread.isPause = true;
     }
 
@@ -68,14 +70,21 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        paint.setStyle(Paint.Style.FILL);
+        canvas.drawColor(Color.WHITE);
+
+        paintScore.setStyle(Paint.Style.FILL);
+        paintScore.setColor(Color.BLACK);
+        paintScore.setTextSize(40);
+
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.BLACK);
 
         h = canvas.getHeight();
         w = canvas.getWidth();
 
-        paint.setColor(Color.CYAN);
+        paint.setColor(Color.GRAY);
 
-        if(blocks.size() == 0) {
+        if (blocks.size() == 0) {
             Block temp = new Block(w * 0.5f, h - 50);
             temp.side = 100;
             Block.h = h;
@@ -85,15 +94,18 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         }
 
+        canvas.drawText("" + (Block.stack.size() - 1), w * 0.5f, 40, paintScore);
+
         for (int i = 0; i < blocks.size(); i++) {
+
             Block block = blocks.get(i);
-            canvas.drawRect(block.getX() - (block.side / 2),
+            canvas.drawRoundRect(block.getX() - (block.side / 2),
                     block.getY() + cameraHeight - (block.side / 2),
                     block.getX() + (block.side / 2),
                     block.getY() + cameraHeight + (block.side / 2),
+                    3,
+                    3,
                     paint);
-
-            canvas.drawText("Score " + (Block.stack.size() - 1), w - 100, 30, paint);
         }
 
     }
@@ -113,7 +125,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             }
         }
 
-        if((Block.stack.size() >= 1) && (Block.stack.get(Block.stack.size() - 1).getY() + cameraHeight < 150)) {
+        if ((Block.stack.size() >= 1) && (Block.stack.get(Block.stack.size() - 1).getY() + cameraHeight < 150)) {
             increaseCameraHeight = true;
         }
 
@@ -183,9 +195,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void increaseCameraHeight() {
-        if(increaseCameraHeight) {
-            cameraHeight ++;
-            if(cameraHeight % 100 == 0) {
+        if (increaseCameraHeight) {
+            cameraHeight++;
+            if (cameraHeight % 100 == 0) {
                 increaseCameraHeight = false;
             }
         }
