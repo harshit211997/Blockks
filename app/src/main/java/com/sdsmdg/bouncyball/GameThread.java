@@ -46,7 +46,7 @@ public class GameThread extends Thread{
 
                 previous = System.currentTimeMillis();
 
-                parent.render();
+                parent.render(lag);
             }
         }
     }

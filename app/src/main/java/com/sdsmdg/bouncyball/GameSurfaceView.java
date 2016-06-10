@@ -26,6 +26,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     boolean surfaceCreated = false;
     int cameraHeight = 0;
     boolean increaseCameraHeight = false;
+    double lag = 0.0;
 
     public GameSurfaceView(Context context) {
         super(context);
@@ -94,15 +95,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         }
 
-        canvas.drawText("" + (Block.stack.size() - 1), w * 0.5f, 40, paintScore);
+        canvas.drawText("" + (Block.stack.size() - 1), w - 40, 40, paintScore);
 
         for (int i = 0; i < blocks.size(); i++) {
 
             Block block = blocks.get(i);
-            canvas.drawRoundRect(block.getX() - (block.side / 2),
-                    block.getY() + cameraHeight - (block.side / 2),
-                    block.getX() + (block.side / 2),
-                    block.getY() + cameraHeight + (block.side / 2),
+            canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
+                    block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2),
+                    block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
+                    block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
                     3,
                     3,
                     paint);
@@ -120,6 +121,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
 
         for (int i = 0; i < blocks.size(); i++) {
+            if (!blocks.get(i).isFullyGrown && blocks.get(i).side == Block.increasedSize) {
+                blocks.get(i).isFullyGrown = true;
+            }
             if (blocks.get(i).side == 0) {
                 blocks.remove(i);
             }
@@ -133,8 +137,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     }
 
-    public void render() {
+    public void render(double time) {
 
+        lag = time;
         Canvas canvas = null;
 
         try {
