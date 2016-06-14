@@ -5,18 +5,10 @@ public class GameThread extends Thread{
     boolean running = false;
     GameSurfaceView parent;
     int MS_GAME_TIME = 16;
-    static GameThread gameThread;
     boolean isPause = false;
 
     GameThread(GameSurfaceView gameSurfaceView) {
         parent = gameSurfaceView;
-    }
-
-    public static GameThread getInstance(GameSurfaceView gameSurfaceView) {
-        if(gameThread == null) {
-            gameThread = new GameThread(gameSurfaceView);
-        }
-        return gameThread;
     }
 
     void setRunning(boolean r) {

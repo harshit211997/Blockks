@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,11 +16,14 @@ import java.util.List;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
 
+    String TAG = "harshit";
+    
     SurfaceHolder surfaceHolder;
     GameThread gameThread = null;
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintScore = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintBlue = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintGray = new Paint(Paint.ANTI_ALIAS_FLAG);
     int h, w;
     List<Block> blocks;
     int prevX = 0, prevY = 0;
@@ -30,61 +34,87 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public GameSurfaceView(Context context) {
         super(context);
+
+        surfaceHolder = getHolder();
+        surfaceHolder.addCallback(this);
+
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        Log.i(TAG, "surfaceChanged: called");
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
         blocks = new ArrayList<>();
-        gameThread = GameThread.getInstance(this);
+        gameThread = new GameThread(this);
         gameThread.setRunning(true);
         gameThread.start();
         surfaceCreated = true;
 
+        Log.i(TAG, "surfaceCreated: called");
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         surfaceCreated = false;
+        gameThread.setRunning(false);
+        boolean retry = true;
+        while(retry) {
+            try {
+                gameThread.join();
+                retry = false;
+            } catch (InterruptedException e) { }
+        }
+
+        reset();
+
+        Log.i(TAG, "surfaceDestroyed: called");
     }
 
     void onResume() {
 
-        surfaceHolder = getHolder();
-        surfaceHolder.addCallback(this);
-        if (gameThread != null)
+        if (gameThread != null) {
             gameThread.isPause = false;
+        }
+
+        Log.i(TAG, "onResume: called");
 
     }
 
     void onPause() {
         if (gameThread != null)
             gameThread.isPause = true;
+
+        Log.i(TAG, "onPause: called");
     }
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        canvas.drawColor(Color.WHITE);
+        paintBlue.setStyle(Paint.Style.FILL);
+        paintBlue.setColor(Color.CYAN);
+        paintBlue.setTextSize(40);
+        paintBlue.setTextAlign(Paint.Align.RIGHT);
 
-        paintScore.setStyle(Paint.Style.FILL);
-        paintScore.setColor(Color.BLACK);
-        paintScore.setTextSize(40);
+        paintWhite.setStyle(Paint.Style.FILL);
+        paintWhite.setColor(Color.WHITE);
 
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLACK);
+        paintBorder.setStyle(Paint.Style.STROKE);
+        paintBorder.setColor(Color.BLACK);
+
+        paintGray.setStyle(Paint.Style.FILL);
+        paintGray.setColor(Color.GRAY);
+        paintGray.setTextSize(40);
+        paintGray.setTextAlign(Paint.Align.RIGHT);
 
         h = canvas.getHeight();
         w = canvas.getWidth();
 
-        paint.setColor(Color.GRAY);
-
+        //Adding the first block
         if (blocks.size() == 0) {
             Block temp = new Block(w * 0.5f, h - 50);
             temp.side = 100;
@@ -95,18 +125,69 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         }
 
-        canvas.drawText("" + (Block.stack.size() - 1), w - 40, 40, paintScore);
+        canvas.drawRect(0, 0, w, h * 0.5f, paintWhite);
+        canvas.drawRect(0, h * 0.5f, w, h, paintBlue);
+
+        canvas.drawText("" + Block.score, w - 10, 40, paintGray);
 
         for (int i = 0; i < blocks.size(); i++) {
 
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setStyle(Paint.Style.FILL);
             Block block = blocks.get(i);
+            if(block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2) < h * 0.5f) {
+                paint.setColor(Color.CYAN);
+
+                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2),
+                        block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
+                        3,
+                        3,
+                        paint);
+
+            }
+            else if(block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2) > h * 0.5f) {
+                paint.setColor(Color.WHITE);
+
+                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2),
+                        block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
+                        3,
+                        3,
+                        paint);
+
+            }
+            else {
+
+                    paint.setColor(Color.CYAN);
+                    canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
+                            block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
+                            block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
+                            h * 0.5f,
+                            3,
+                            0,
+                            paint);
+                    paint.setColor(Color.WHITE);
+                    canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
+                            h * 0.5f,
+                            block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
+                            block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
+                            0,
+                            3,
+                            paint);
+
+            }
+
             canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
                     block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2),
                     block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
                     block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
                     3,
                     3,
-                    paint);
+                    paintBorder);
+
         }
 
     }
@@ -121,9 +202,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
 
         for (int i = 0; i < blocks.size(); i++) {
-            if (!blocks.get(i).isFullyGrown && blocks.get(i).side == Block.increasedSize) {
-                blocks.get(i).isFullyGrown = true;
-            }
             if (blocks.get(i).side == 0) {
                 blocks.remove(i);
             }
@@ -131,6 +209,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         if ((Block.stack.size() >= 1) && (Block.stack.get(Block.stack.size() - 1).getY() + cameraHeight < 150)) {
             increaseCameraHeight = true;
+        }
+
+        if(Block.stack.size() >= 9) {
+            Block.stack.remove(0);
+            blocks.remove(0);
+            Block.h -= Block.increasedSize;
         }
 
         increaseCameraHeight();
@@ -172,7 +256,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 case MotionEvent.ACTION_DOWN:
                     prevX = x;
                     prevY = y;
-                    block = new Block((float) 0.75 * h, (float) 0.75 * w);
+                    //so that the block does not shrink on birth :)
+                    block = new Block( 0, -cameraHeight);
                     blocks.add(block);
                     ACTION_DOWN_PRESSED = true;
                     break;
@@ -201,11 +286,20 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void increaseCameraHeight() {
         if (increaseCameraHeight) {
-            cameraHeight++;
-            if (cameraHeight % 100 == 0) {
+            cameraHeight += 2;
+            if (cameraHeight % 100 == 0 || (cameraHeight-1) % 100 == 0) {
                 increaseCameraHeight = false;
             }
         }
+    }
+
+    public void reset() {
+        blocks = new ArrayList<>();
+        Block.score = 0;
+        Block.stack = new ArrayList<>();
+        cameraHeight = 0;
+        lag = 0.0;
+        increaseCameraHeight = false;
     }
 
 }

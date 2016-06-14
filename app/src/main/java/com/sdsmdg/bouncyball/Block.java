@@ -16,7 +16,7 @@ public class Block {
     boolean lastBlock = false;
     static List<Block> stack = new ArrayList<>();
     boolean grow = false, shrink = false;
-    boolean isFullyGrown = false;
+    public static int score = 0;
 
     public Block(float x, float y) {
         this.x = x;
@@ -69,112 +69,112 @@ public class Block {
 
     public void update(int time) {
 
-        if(!isFullyGrown) {
 
-            if (y < h - side / 2) {
-                vy = vy + (ay * 0.01f * time);
-                y = y + (vy * 0.01f * time);
-                x = x + (vx * 0.01f * time);
-            } else {
-                vy = -3 * vy / 10;
-                vx = 0;
-                y = h - side / 2;
-                if (firstBlock && !stack.contains(this)) {
-                    stack.add(this);
-                } else if (!stack.contains(this)) {
-                    shrink = true;
-                }
+        if (y <= h - side / 2) {
+            vy = vy + (ay * 0.01f * time);
+            y = y + (vy * 0.01f * time);
+            x = x + (vx * 0.01f * time);
+        } else {
+            vy = -3 * vy / 10;
+            vx = 0;
+            y = h - side / 2;
+            if (firstBlock && !stack.contains(this)) {
+                stack.add(this);
+            } else if (!stack.contains(this)) {
+                shrink = true;
             }
-
-            grow();
-            shrink();
         }
+
+        grow();
+        shrink();
+
     }
 
     public void checkCollission(Block block) {
 
-        if(!isFullyGrown || !block.isFullyGrown) {
 
-            if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top left
-                if (x + (vx - block.vx) * 0.01 * 16 - block.x >= y + (vx - block.vx) * 0.01 * 16 - block.y) {
-                    block.x = x - (side + block.side) / 2;
-                    block.vx = -0.3f * block.vx;
+        if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top left
+            if (x + (vx - block.vx) * 0.01 * 16 - block.x >= y + (vx - block.vx) * 0.01 * 16 - block.y) {
+                block.x = x - (side + block.side) / 2;
+                block.vx = -0.3f * block.vx;
+                if (!stack.contains(block))
+                    block.shrink = true;
+            } else {
+                block.y = y - (side + block.side) / 2;
+                block.vy = vy - 0.3f * block.vy;
+                block.vx = 0;
+                if (lastBlock && !block.shrink) {//so that the block which was shrinking can't be added to stack
+                    block.lastBlock = true;
+                    lastBlock = false;
+                    block.grow = true;
+                    score ++;
                     if (!stack.contains(block))
-                        block.shrink = true;
-                } else {
-                    block.y = y - (side + block.side) / 2;
-                    block.vy = vy - 0.3f * block.vy;
-                    block.vx = 0;
-                    if (lastBlock && !block.shrink) {//so that the block which was shrinking can't be added to stack
-                        block.lastBlock = true;
-                        lastBlock = false;
-                        block.grow = true;
-                        if (!stack.contains(block))
-                            stack.add(block);
-                    } else if (!stack.contains(block))
-                        block.shrink = true;
-                }
-            } else if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom left
-                if (x + (vx - block.vx) * 0.01 * 16 - block.x >= block.y + (block.vy - vy) * 0.01 * 16 - y) {
-                    block.x = x - (side + block.side) / 2;
-                    block.vx = -0.3f * block.vx;
+                        stack.add(block);
+                } else if (!stack.contains(block))
+                    block.shrink = true;
+            }
+        } else if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom left
+            if (x + (vx - block.vx) * 0.01 * 16 - block.x >= block.y + (block.vy - vy) * 0.01 * 16 - y) {
+                block.x = x - (side + block.side) / 2;
+                block.vx = -0.3f * block.vx;
+                if (!stack.contains(block))
+                    block.shrink = true;
+            } else {
+                block.y = y + (side + block.side) / 2;
+                block.vy = vy - 0.3f * block.vy;
+                if (!stack.contains(block))
+                    block.shrink = true;
+            }
+        } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom right
+            if (block.x + (vx - block.vx) * 0.01 * 16 - x >= block.y + (block.vy - vy) * 0.01 * 16 - y) {
+                block.x = x + (side + block.side) / 2;
+                block.vx = -0.3f * block.vx;
+                if (!stack.contains(block))
+                    block.shrink = true;
+            } else {
+                block.y = y + (side + block.side) / 2;
+                block.vy = vy - 0.3f * block.vy;
+                if (!stack.contains(block))
+                    block.shrink = true;
+            }
+        } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top right
+            if (block.x + (vx - block.vx) * 0.01 * 16 - x >= y + (vx - block.vx) * 0.01 * 16 - block.y) {
+                block.x = x + (side + block.side) / 2;
+                block.vx = -0.3f * block.vx;
+                if (!stack.contains(block))
+                    block.shrink = true;
+            } else {
+                block.y = y - (side + block.side) / 2;
+                block.vy = vy - 0.3f * block.vy;
+                block.vx = 0;
+                if (lastBlock && !block.shrink) {//so that the block which was shrinking can't be added to stack
+                    block.lastBlock = true;
+                    lastBlock = false;
+                    block.grow = true;
+                    score ++;
                     if (!stack.contains(block))
-                        block.shrink = true;
-                } else {
-                    block.y = y + (side + block.side) / 2;
-                    block.vy = vy - 0.3f * block.vy;
-                    if (!stack.contains(block))
-                        block.shrink = true;
-                }
-            } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom right
-                if (block.x + (vx - block.vx) * 0.01 * 16 - x >= block.y + (block.vy - vy) * 0.01 * 16 - y) {
-                    block.x = x + (side + block.side) / 2;
-                    block.vx = -0.3f * block.vx;
-                    if (!stack.contains(block))
-                        block.shrink = true;
-                } else {
-                    block.y = y + (side + block.side) / 2;
-                    block.vy = vy - 0.3f * block.vy;
-                    if (!stack.contains(block))
-                        block.shrink = true;
-                }
-            } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top right
-                if (block.x + (vx - block.vx) * 0.01 * 16 - x >= y + (vx - block.vx) * 0.01 * 16 - block.y) {
-                    block.x = x + (side + block.side) / 2;
-                    block.vx = -0.3f * block.vx;
-                    if (!stack.contains(block))
-                        block.shrink = true;
-                } else {
-                    block.y = y - (side + block.side) / 2;
-                    block.vy = vy - 0.3f * block.vy;
-                    block.vx = 0;
-                    if (lastBlock && !block.shrink) {//so that the block which was shrinking can't be added to stack
-                        block.lastBlock = true;
-                        lastBlock = false;
-                        block.grow = true;
-                        if (!stack.contains(block))
-                            stack.add(block);
-                    } else if (!stack.contains(block))
-                        block.shrink = true;
-                }
+                        stack.add(block);
+                } else if (!stack.contains(block))
+                    block.shrink = true;
             }
         }
+
     }
 
     public void grow() {
-        if(grow) {
-            side ++;
+        if (grow) {
+            side += 2;
         }
-        if(side == increasedSize) {
+        if (side >= increasedSize) {
             grow = false;
         }
     }
 
     public void shrink() {
-        if(shrink) {
-            side --;
+        if (shrink) {
+            side--;
         }
-        if(side == 0) {
+        if (side == 0) {
             shrink = false;
         }
     }
