@@ -15,7 +15,6 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
 
     String TAG = "harshit";
@@ -137,7 +136,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         canvas.drawText("" + Block.score, w - 10, 40, paintGray);//Score
 
         paintGray.setTextAlign(Paint.Align.LEFT);
-        canvas.drawText("" + Block.life, 10, 40, paintGray);//life
+        canvas.drawRoundRect(10, 10, 30, 30, 3, 3, paintGray);
+        paintGray.setTextSize(30);
+        canvas.drawText("x" + Block.life, 40, 30, paintGray);//life
 
         for (int i = 0; i < blocks.size(); i++) {
 
