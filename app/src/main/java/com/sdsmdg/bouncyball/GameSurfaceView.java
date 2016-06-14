@@ -1,6 +1,8 @@
 package com.sdsmdg.bouncyball;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,7 +19,8 @@ import java.util.List;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
 
     String TAG = "harshit";
-    
+    Context context;
+
     SurfaceHolder surfaceHolder;
     GameThread gameThread = null;
     private Paint paintWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -35,6 +38,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public GameSurfaceView(Context context) {
         super(context);
 
+        this.context = context;
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
 
@@ -62,11 +66,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         surfaceCreated = false;
         gameThread.setRunning(false);
         boolean retry = true;
-        while(retry) {
+        while (retry) {
             try {
                 gameThread.join();
                 retry = false;
-            } catch (InterruptedException e) { }
+            } catch (InterruptedException e) {
+            }
         }
 
         reset();
@@ -128,62 +133,64 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         canvas.drawRect(0, 0, w, h * 0.5f, paintWhite);
         canvas.drawRect(0, h * 0.5f, w, h, paintBlue);
 
-        canvas.drawText("" + Block.score, w - 10, 40, paintGray);
+
+        canvas.drawText("" + Block.score, w - 10, 40, paintGray);//Score
+
+        paintGray.setTextAlign(Paint.Align.LEFT);
+        canvas.drawText("" + Block.life, 10, 40, paintGray);//life
 
         for (int i = 0; i < blocks.size(); i++) {
 
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setStyle(Paint.Style.FILL);
             Block block = blocks.get(i);
-            if(block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2) < h * 0.5f) {
+            if (block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2) < h * 0.5f) {
                 paint.setColor(Color.CYAN);
 
-                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
-                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2),
-                        block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
-                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
+                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
+                        block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2),
                         3,
                         3,
                         paint);
 
-            }
-            else if(block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2) > h * 0.5f) {
+            } else if (block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2) > h * 0.5f) {
                 paint.setColor(Color.WHITE);
 
-                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
-                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2),
-                        block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
-                        block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
+                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
+                        block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2),
                         3,
                         3,
                         paint);
 
+            } else {
+
+                paint.setColor(Color.CYAN);
+                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
+                        block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
+                        h * 0.5f,
+                        3,
+                        0,
+                        paint);
+                paint.setColor(Color.WHITE);
+                canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
+                        h * 0.5f,
+                        block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
+                        block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2),
+                        0,
+                        3,
+                        paint);
+
             }
-            else {
 
-                    paint.setColor(Color.CYAN);
-                    canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
-                            block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
-                            block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
-                            h * 0.5f,
-                            3,
-                            0,
-                            paint);
-                    paint.setColor(Color.WHITE);
-                    canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
-                            h * 0.5f,
-                            block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
-                            block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
-                            0,
-                            3,
-                            paint);
-
-            }
-
-            canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float)lag - (block.side / 2),
-                    block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight - (block.side / 2),
-                    block.getX() + block.getVx() * 0.01f * (float)lag + (block.side / 2),
-                    block.getY() + block.getVy() * 0.01f * (float)lag + cameraHeight + (block.side / 2),
+            canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
+                    block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
+                    block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
+                    block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2),
                     3,
                     3,
                     paintBorder);
@@ -211,10 +218,14 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             increaseCameraHeight = true;
         }
 
-        if(Block.stack.size() >= 9) {
+        if (Block.stack.size() >= 9) {
             Block.stack.remove(0);
             blocks.remove(0);
             Block.h -= Block.increasedSize;
+        }
+
+        if (Block.life == -1) {
+            gameOver();
         }
 
         increaseCameraHeight();
@@ -257,7 +268,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     prevX = x;
                     prevY = y;
                     //so that the block does not shrink on birth :)
-                    block = new Block( 0, -cameraHeight);
+                    block = new Block(0, -cameraHeight);
                     blocks.add(block);
                     ACTION_DOWN_PRESSED = true;
                     break;
@@ -287,7 +298,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void increaseCameraHeight() {
         if (increaseCameraHeight) {
             cameraHeight += 2;
-            if (cameraHeight % 100 == 0 || (cameraHeight-1) % 100 == 0) {
+            if (cameraHeight % 100 == 0 || (cameraHeight - 1) % 100 == 0) {
                 increaseCameraHeight = false;
             }
         }
@@ -295,11 +306,19 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void reset() {
         blocks = new ArrayList<>();
+        Block.life = 10;
         Block.score = 0;
         Block.stack = new ArrayList<>();
         cameraHeight = 0;
         lag = 0.0;
         increaseCameraHeight = false;
+    }
+
+    public void gameOver() {
+        Intent i = new Intent(context, GameOverActivity.class);
+        i.putExtra("score", Block.score);
+        context.startActivity(i);
+        ((Activity)context).finish();
     }
 
 }
