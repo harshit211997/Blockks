@@ -94,7 +94,6 @@ public class Block {
 
     public void checkCollission(Block block) {
 
-
         if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top left
             if (x + (vx - block.vx) * 0.01 * 16 - block.x >= y + (vx - block.vx) * 0.01 * 16 - block.y) {
                 block.x = x - (side + block.side) / 2;

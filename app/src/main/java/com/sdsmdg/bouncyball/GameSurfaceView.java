@@ -26,6 +26,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Paint paintBlue = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint paintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint paintGray = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintRed = new Paint(Paint.ANTI_ALIAS_FLAG);
     int h, w;
     List<Block> blocks;
     int prevX = 0, prevY = 0;
@@ -33,6 +34,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     int cameraHeight = 0;
     boolean increaseCameraHeight = false;
     double lag = 0.0;
+    boolean drawLine = false;
+    int x1, x2, y1, y2;
 
     public GameSurfaceView(Context context) {
         super(context);
@@ -114,6 +117,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paintGray.setColor(Color.GRAY);
         paintGray.setTextSize(40);
         paintGray.setTextAlign(Paint.Align.RIGHT);
+
+        paintRed.setStyle(Paint.Style.FILL);
+        paintRed.setColor(Color.RED);
 
         h = canvas.getHeight();
         w = canvas.getWidth();
@@ -198,6 +204,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         }
 
+        if(drawLine) {
+            canvas.drawLine(x1, y1, x2, y2, paintRed);
+        }
+
     }
 
     public void update(int time) {
@@ -269,15 +279,22 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     prevX = x;
                     prevY = y;
                     //so that the block does not shrink on birth :)
-                    block = new Block(0, -cameraHeight);
+                    block = new Block(x, y - cameraHeight);
                     blocks.add(block);
                     ACTION_DOWN_PRESSED = true;
+                    drawLine = true;
+                    x1 = x;
+                    y1 = y;
+                    x2 = x;
+                    y2 = y;
                     break;
 
                 case MotionEvent.ACTION_MOVE:
                     if (ACTION_DOWN_PRESSED) {
                         block.setX(x);
                         block.setY(y - cameraHeight);
+                        x2 = x;
+                        y2 = y;
                     }
                     break;
 
@@ -287,6 +304,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         block.setVy(prevY - y);
                     }
                     ACTION_DOWN_PRESSED = false;
+                    drawLine = false;
                     break;
 
             }
