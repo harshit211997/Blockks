@@ -23,10 +23,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     SurfaceHolder surfaceHolder;
     GameThread gameThread = null;
     private Paint paintWhite = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintBlue = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintBlack = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint paintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintGray = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintRed = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint paintScore = new Paint(Paint.ANTI_ALIAS_FLAG);
     int h, w;
     List<Block> blocks;
     int prevX = 0, prevY = 0;
@@ -102,10 +101,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        paintBlue.setStyle(Paint.Style.FILL);
-        paintBlue.setColor(Color.CYAN);
-        paintBlue.setTextSize(40);
-        paintBlue.setTextAlign(Paint.Align.RIGHT);
+        paintBlack.setStyle(Paint.Style.FILL);
+        paintBlack.setColor(Color.BLACK);
+        paintBlack.setTextSize(40);
+        paintBlack.setTextAlign(Paint.Align.RIGHT);
 
         paintWhite.setStyle(Paint.Style.FILL);
         paintWhite.setColor(Color.WHITE);
@@ -113,13 +112,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paintBorder.setStyle(Paint.Style.STROKE);
         paintBorder.setColor(Color.BLACK);
 
-        paintGray.setStyle(Paint.Style.FILL);
-        paintGray.setColor(Color.GRAY);
-        paintGray.setTextSize(40);
-        paintGray.setTextAlign(Paint.Align.RIGHT);
-
-        paintRed.setStyle(Paint.Style.FILL);
-        paintRed.setColor(Color.RED);
+        paintScore.setStyle(Paint.Style.FILL);
+        paintScore.setColor(Color.BLACK);
+        paintScore.setTextSize(40);
+        paintScore.setTextAlign(Paint.Align.RIGHT);
 
         h = canvas.getHeight();
         w = canvas.getWidth();
@@ -136,15 +132,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
 
         canvas.drawRect(0, 0, w, h * 0.5f, paintWhite);
-        canvas.drawRect(0, h * 0.5f, w, h, paintBlue);
+        canvas.drawRect(0, h * 0.5f, w, h, paintBlack);
 
 
-        canvas.drawText("" + Block.score, w - 10, 40, paintGray);//Score
+        canvas.drawText("" + Block.score, w - 10, 40, paintScore);//Score
 
-        paintGray.setTextAlign(Paint.Align.LEFT);
-        canvas.drawRoundRect(10, 10, 30, 30, 3, 3, paintGray);
-        paintGray.setTextSize(30);
-        canvas.drawText("x" + Block.life, 40, 30, paintGray);//life
+        paintScore.setTextAlign(Paint.Align.LEFT);
+        canvas.drawRoundRect(10, 10, 30, 30, 3, 3, paintScore);
+        paintScore.setTextSize(30);
+        canvas.drawText("x " + Block.life, 40, 30, paintScore);//life
 
         for (int i = 0; i < blocks.size(); i++) {
 
@@ -152,8 +148,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             paint.setStyle(Paint.Style.FILL);
             Block block = blocks.get(i);
             if (block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2) < h * 0.5f) {
-                paint.setColor(Color.CYAN);
-
+                paint.setColor(Color.BLACK);
+                paintBorder.setColor(Color.WHITE);
                 canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
                         block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
                         block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
@@ -164,7 +160,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
             } else if (block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2) > h * 0.5f) {
                 paint.setColor(Color.WHITE);
-
+                paintBorder.setColor(Color.BLACK);
                 canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
                         block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
                         block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
@@ -175,7 +171,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
             } else {
 
-                paint.setColor(Color.CYAN);
+                paint.setColor(Color.BLACK);
                 canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
                         block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
                         block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
@@ -205,7 +201,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
 
         if(drawLine) {
-            canvas.drawLine(x1, y1, x2, y2, paintRed);
+            canvas.drawLine(x1, y1, x2, y2, paintWhite);
         }
 
     }
