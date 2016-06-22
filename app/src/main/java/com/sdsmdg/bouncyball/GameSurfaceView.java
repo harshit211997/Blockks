@@ -35,6 +35,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     double lag = 0.0;
     boolean drawLine = false;
     int x1, x2, y1, y2;
+    Life life = new Life();
+    Score score = new Score();
 
     public GameSurfaceView(Context context) {
         super(context);
@@ -58,8 +60,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         gameThread.setRunning(true);
         gameThread.start();
         surfaceCreated = true;
-
-        Log.i(TAG, "surfaceCreated: called");
     }
 
     @Override
@@ -122,7 +122,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         //Adding the first block
         if (blocks.size() == 0) {
-            Block temp = new Block(w * 0.5f, h - 50);
+            Block temp = new Block(w * 0.5f, h - 50, life, score);
             temp.side = 100;
             Block.h = h;
             temp.firstBlock = true;
@@ -135,12 +135,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         canvas.drawRect(0, h * 0.5f, w, h, paintBlack);
 
 
-        canvas.drawText("" + Block.score, w - 10, 40, paintScore);//Score
+        canvas.drawText("" + score.getCount(), w - 10, 40, paintScore);//Score
 
         paintScore.setTextAlign(Paint.Align.LEFT);
         canvas.drawRoundRect(10, 10, 30, 30, 3, 3, paintScore);
         paintScore.setTextSize(30);
-        canvas.drawText("x " + Block.life, 40, 30, paintScore);//life
+        canvas.drawText("x " + life.getCount(), 40, 30, paintScore);//life
 
         for (int i = 0; i < blocks.size(); i++) {
 
@@ -231,7 +231,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             Block.h -= Block.increasedSize;
         }
 
-        if (Block.life == -1) {
+        if (life.isGameOver()) {
             gameOver();
         }
 
@@ -275,7 +275,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     prevX = x;
                     prevY = y;
                     //so that the block does not shrink on birth :)
-                    block = new Block(x, y - cameraHeight);
+                    block = new Block(x, y - cameraHeight, life, score);
                     blocks.add(block);
                     ACTION_DOWN_PRESSED = true;
                     drawLine = true;
@@ -321,8 +321,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void reset() {
         blocks = new ArrayList<>();
-        Block.life = 10;
-        Block.score = 0;
+        life.reset();
+        score.reset();
         Block.stack = new ArrayList<>();
         cameraHeight = 0;
         lag = 0.0;
@@ -331,7 +331,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public void gameOver() {
         Intent i = new Intent(context, GameOverActivity.class);
-        i.putExtra("score", Block.score);
+        i.putExtra("score", score.getCount());
         context.startActivity(i);
         ((Activity)context).finish();
     }

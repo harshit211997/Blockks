@@ -3,7 +3,7 @@ package com.sdsmdg.bouncyball;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Block {
+public class Block extends Subject{
 
     private float x, y;
     private float vx = 0, vy = 0;
@@ -16,10 +16,15 @@ public class Block {
     boolean lastBlock = false;
     static List<Block> stack = new ArrayList<>();
     boolean grow = false, shrink = false;
-    public static int score = 0;
-    public static int life = 10;
 
-    public Block(float x, float y) {
+    public Block(float x, float y, Life life, Score score) {
+        this.x = x;
+        this.y = y;
+        addObserver(life);
+        addObserver(score);
+    }
+
+    public void moveTo(float x, float y) {
         this.x = x;
         this.y = y;
     }
@@ -83,7 +88,7 @@ public class Block {
                 stack.add(this);
             } else if (!stack.contains(this) && !shrink) {
                 shrink = true;
-                life --;
+                notifyObservers(Constants.DECREASE_LIFE);
             }
         }
 
@@ -100,7 +105,7 @@ public class Block {
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life --;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             } else {
                 block.y = y - (side + block.side) / 2;
@@ -110,12 +115,12 @@ public class Block {
                     block.lastBlock = true;
                     lastBlock = false;
                     block.grow = true;
-                    score ++;
+                    notifyObservers(Constants.INCREASE_SCORE);
                     if (!stack.contains(block))
                         stack.add(block);
                 } else if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life --;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             }
         } else if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom left
@@ -124,14 +129,14 @@ public class Block {
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life --;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             } else {
                 block.y = y + (side + block.side) / 2;
                 block.vy = vy - 0.3f * block.vy;
                 if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life--;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             }
         } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom right
@@ -140,14 +145,14 @@ public class Block {
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life--;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             } else {
                 block.y = y + (side + block.side) / 2;
                 block.vy = vy - 0.3f * block.vy;
                 if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life--;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             }
         } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top right
@@ -156,7 +161,7 @@ public class Block {
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life--;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             } else {
                 block.y = y - (side + block.side) / 2;
@@ -166,12 +171,12 @@ public class Block {
                     block.lastBlock = true;
                     lastBlock = false;
                     block.grow = true;
-                    score ++;
+                    notifyObservers(Constants.INCREASE_SCORE);
                     if (!stack.contains(block))
                         stack.add(block);
                 } else if (!stack.contains(block) && !block.shrink) {
                     block.shrink = true;
-                    life--;
+                    notifyObservers(Constants.DECREASE_LIFE);
                 }
             }
         }
