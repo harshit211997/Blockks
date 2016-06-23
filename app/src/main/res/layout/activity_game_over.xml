@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@android:color/black"
+    android:background="@android:color/white"
     tools:context="com.sdsmdg.bouncyball.GameOverActivity">
 
     <LinearLayout
@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Game Over"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="40sp" />
 
         <TextView
@@ -30,9 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:layout_marginTop="40dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="50dp"
             android:textSize="60sp" />
 
         <LinearLayout
@@ -42,18 +42,24 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_below="@id/game_over_text"
                 android:onClick="playAgain"
-                android:background="@android:color/white"
-                android:text="Play again"
-                android:layout_marginRight="2dp"/>
+                android:background="@drawable/rounded_corner"
+                android:text="Play Again"
+                android:textSize="20sp"
+                android:textAllCaps="false"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginRight="20dp"/>
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="exit"
-                android:background="@android:color/white"
+                android:layout_height="40dp"
+                android:text="Exit"
+                android:textAllCaps="false"
+                android:background="@drawable/rounded_corner"
+                android:textSize="20sp"
                 android:onClick="exit" />
 
         </LinearLayout>
