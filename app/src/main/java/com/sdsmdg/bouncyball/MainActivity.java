@@ -1,7 +1,8 @@
 package com.sdsmdg.bouncyball;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         gameSurfaceView = new GameSurfaceView(this);
-        gameSurfaceView.setOnTouchListener(gameSurfaceView);
+        GestureDetectorCompat gestureDetectorCompat = new GestureDetectorCompat(this, gameSurfaceView);
 
         setContentView(gameSurfaceView);
     }

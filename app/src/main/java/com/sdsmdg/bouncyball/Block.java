@@ -7,7 +7,7 @@ public class Block extends Subject{
 
     private float x, y;
     private float vx = 0, vy = 0;
-    private float ax, ay = 9.8f;
+    private float ax, ay = 980f;
     int side = 20;
     static int increasedSize = 100;
     static int h;
@@ -77,9 +77,9 @@ public class Block extends Subject{
 
 
         if (y <= h - side / 2) {
-            vy = vy + (ay * 0.01f * time);
-            y = y + (vy * 0.01f * time);
-            x = x + (vx * 0.01f * time);
+            vy = vy + (ay * 0.001f * time);
+            y = y + (vy * 0.001f * time);
+            x = x + (vx * 0.001f * time);
         } else {
             vy = -3 * vy / 10;
             vx = 0;
@@ -99,8 +99,8 @@ public class Block extends Subject{
 
     public void checkCollission(Block block) {
 
-        if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top left
-            if (x + (vx - block.vx) * 0.01 * 16 - block.x >= y + (vx - block.vx) * 0.01 * 16 - block.y) {
+        if (x + (vx - block.vx) * 0.001 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.001 * 16 - block.x < (side + block.side) / 2 && y + (vy - block.vy) * 0.001 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.001 * 16 - block.y < (side + block.side) / 2) {//top left
+            if (x + (vx - block.vx) * 0.001 * 16 - block.x >= y + (vx - block.vx) * 0.001 * 16 - block.y) {
                 block.x = x - (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {
@@ -123,8 +123,8 @@ public class Block extends Subject{
                     notifyObservers(Constants.DECREASE_LIFE);
                 }
             }
-        } else if (x + (vx - block.vx) * 0.01 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.01 * 16 - block.x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom left
-            if (x + (vx - block.vx) * 0.01 * 16 - block.x >= block.y + (block.vy - vy) * 0.01 * 16 - y) {
+        } else if (x + (vx - block.vx) * 0.001 * 16 - block.x >= 0 && x + (vx - block.vx) * 0.001 * 16 - block.x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.001 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.001 * 16 - y < (side + block.side) / 2) {//bottom left
+            if (x + (vx - block.vx) * 0.001 * 16 - block.x >= block.y + (block.vy - vy) * 0.001 * 16 - y) {
                 block.x = x - (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {
@@ -139,8 +139,8 @@ public class Block extends Subject{
                     notifyObservers(Constants.DECREASE_LIFE);
                 }
             }
-        } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.01 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.01 * 16 - y < (side + block.side) / 2) {//bottom right
-            if (block.x + (vx - block.vx) * 0.01 * 16 - x >= block.y + (block.vy - vy) * 0.01 * 16 - y) {
+        } else if (block.x + (vx - block.vx) * 0.001 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.001 * 16 - x < (side + block.side) / 2 && block.y + (block.vy - vy) * 0.001 * 16 - y >= 0 && block.y + (block.vy - vy) * 0.001 * 16 - y < (side + block.side) / 2) {//bottom right
+            if (block.x + (vx - block.vx) * 0.001 * 16 - x >= block.y + (block.vy - vy) * 0.001 * 16 - y) {
                 block.x = x + (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {
@@ -155,8 +155,8 @@ public class Block extends Subject{
                     notifyObservers(Constants.DECREASE_LIFE);
                 }
             }
-        } else if (block.x + (vx - block.vx) * 0.01 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.01 * 16 - x < (side + block.side) / 2 && y + (vy - block.vy) * 0.01 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.01 * 16 - block.y < (side + block.side) / 2) {//top right
-            if (block.x + (vx - block.vx) * 0.01 * 16 - x >= y + (vx - block.vx) * 0.01 * 16 - block.y) {
+        } else if (block.x + (vx - block.vx) * 0.001 * 16 - x >= 0 && block.x + (vx - block.vx) * 0.001 * 16 - x < (side + block.side) / 2 && y + (vy - block.vy) * 0.001 * 16 - block.y >= 0 && y + (vy - block.vy) * 0.001 * 16 - block.y < (side + block.side) / 2) {//top right
+            if (block.x + (vx - block.vx) * 0.001 * 16 - x >= y + (vx - block.vx) * 0.001 * 16 - block.y) {
                 block.x = x + (side + block.side) / 2;
                 block.vx = -0.3f * block.vx;
                 if (!stack.contains(block) && !block.shrink) {

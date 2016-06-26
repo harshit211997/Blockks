@@ -6,16 +6,17 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
+public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, GestureDetector.OnGestureListener{
 
     String TAG = "harshit";
     Context context;
@@ -38,13 +39,42 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     Life life = new Life();
     Score score = new Score();
 
+    GestureDetectorCompat mDetector;
+
     public GameSurfaceView(Context context) {
         super(context);
 
         this.context = context;
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
+        mDetector = new GestureDetectorCompat(context, this);
 
+    }
+
+
+    Block block;
+    boolean ACTION_DOWN_PRESSED = false;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+        int action1 = e1.getAction();
+        int action2 = e2.getAction();
+
+        int distX = (int)(e2.getX() - e1.getX());
+        int distY = (int)(e2.getY() - e1.getY());
+        int hypotenuse = (int)Math.sqrt(distX * distX + distY * distY);
+        block = new Block(e2.getX(), e2.getY() - cameraHeight, life, score);
+        block.setVx(900 * distX / (float)hypotenuse);
+        block.setVy(900 * distY / (float)hypotenuse);
+        blocks.add(block);
+
+        return true;
     }
 
     @Override
@@ -142,18 +172,18 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         for (int i = 0; i < blocks.size(); i++) {
 
             Block block = blocks.get(i);
-            canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
-                    block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
-                    block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
-                    block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2),
+            canvas.drawRoundRect(block.getX() + block.getVx() * 0.001f * (float) lag - (block.side / 2),
+                    block.getY() + block.getVy() * 0.001f * (float) lag + cameraHeight - (block.side / 2),
+                    block.getX() + block.getVx() * 0.001f * (float) lag + (block.side / 2),
+                    block.getY() + block.getVy() * 0.001f * (float) lag + cameraHeight + (block.side / 2),
                     3,
                     3,
                     paintWhite);
 
-            canvas.drawRoundRect(block.getX() + block.getVx() * 0.01f * (float) lag - (block.side / 2),
-                    block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight - (block.side / 2),
-                    block.getX() + block.getVx() * 0.01f * (float) lag + (block.side / 2),
-                    block.getY() + block.getVy() * 0.01f * (float) lag + cameraHeight + (block.side / 2),
+            canvas.drawRoundRect(block.getX() + block.getVx() * 0.001f * (float) lag - (block.side / 2),
+                    block.getY() + block.getVy() * 0.001f * (float) lag + cameraHeight - (block.side / 2),
+                    block.getX() + block.getVx() * 0.001f * (float) lag + (block.side / 2),
+                    block.getY() + block.getVy() * 0.001f * (float) lag + cameraHeight + (block.side / 2),
                     3,
                     3,
                     paintBorder);
@@ -217,61 +247,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    Block block;
-    boolean ACTION_DOWN_PRESSED = false;
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-
-        int x = (int) event.getX();
-        int y = (int) event.getY();
-        int action = event.getActionMasked();
-
-        if (y >= h * 0.5 && y <= h) {
-
-            switch (action) {
-
-                case MotionEvent.ACTION_DOWN:
-                    prevX = x;
-                    prevY = y;
-                    //so that the block does not shrink on birth :)
-                    block = new Block(x, y - cameraHeight, life, score);
-                    blocks.add(block);
-                    ACTION_DOWN_PRESSED = true;
-                    drawLine = true;
-                    x1 = x;
-                    y1 = y;
-                    x2 = x;
-                    y2 = y;
-                    break;
-
-                case MotionEvent.ACTION_MOVE:
-                    if (ACTION_DOWN_PRESSED) {
-                        block.setX(x);
-                        block.setY(y - cameraHeight);
-                        x2 = x;
-                        y2 = y;
-                        block.setVx(0);
-                        block.setVy(0);
-                    }
-                    break;
-
-                case MotionEvent.ACTION_UP:
-                    if (ACTION_DOWN_PRESSED) {
-                        block.setVx(prevX - x);
-                        block.setVy(prevY - y);
-                    }
-                    ACTION_DOWN_PRESSED = false;
-                    drawLine = false;
-                    break;
-
-            }
-
-        }
-
-        return true;
-    }
-
     public void increaseCameraHeight() {
         if (increaseCameraHeight) {
             cameraHeight += 2;
@@ -296,6 +271,31 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         i.putExtra("score", score.getCount());
         context.startActivity(i);
         ((Activity) context).finish();
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return true;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
     }
 
 }
