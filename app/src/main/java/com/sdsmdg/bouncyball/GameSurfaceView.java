@@ -29,13 +29,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Paint paintScore = new Paint(Paint.ANTI_ALIAS_FLAG);
     int h, w;
     List<Block> blocks;
-    int prevX = 0, prevY = 0;
     boolean surfaceCreated = false;
     int cameraHeight = 0;
     boolean increaseCameraHeight = false;
     double lag = 0.0;
-    boolean drawLine = false;
-    int x1, x2, y1, y2;
     Life life = new Life();
     Score score = new Score();
 
@@ -53,7 +50,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
 
     Block block;
-    boolean ACTION_DOWN_PRESSED = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -62,10 +58,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-        int action1 = e1.getAction();
-        int action2 = e2.getAction();
-
         int distX = (int)(e2.getX() - e1.getX());
         int distY = (int)(e2.getY() - e1.getY());
         int hypotenuse = (int)Math.sqrt(distX * distX + distY * distY);
@@ -148,13 +140,28 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         h = canvas.getHeight();
         w = canvas.getWidth();
 
-        //Adding the first block
+        //Adding the first blocks
         if (blocks.size() == 0) {
             Block temp = new Block(w * 0.5f, h - 50, life, score);
-            temp.side = 100;
             Block.h = h;
+            temp.side = 100;
             temp.firstBlock = true;
             temp.lastBlock = true;
+            blocks.add(temp);
+
+            temp = new Block(w * 0.5f, h - 150, life, score);
+            blocks.add(temp);
+
+            temp = new Block(w * 0.5f - 5, h - 250, life, score);
+            blocks.add(temp);
+
+            temp = new Block(w * 0.5f  + 5, h - 350, life, score);
+            blocks.add(temp);
+
+            temp = new Block(w * 0.5f, h - 450, life, score);
+            blocks.add(temp);
+
+            temp = new Block(w * 0.5f - 10, h - 550, life, score);
             blocks.add(temp);
         }
 
@@ -188,10 +195,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     3,
                     paintBorder);
 
-        }
-
-        if (drawLine) {
-            canvas.drawLine(x1, y1, x2, y2, paintWhite);
         }
 
     }
