@@ -1,4 +1,4 @@
-# BlockGame
+# Blockks
 <p>A Simple game made using native android(only canvas, no framework, no game engine, no physics engine).</p>
 <p>Good for learning</p>
 <p>Suggestions are very welcome!</p>
